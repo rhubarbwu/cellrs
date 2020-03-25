@@ -1,14 +1,29 @@
 # cellrs
 
+![Classic Screenshot](screenshots/classic.jpg)
+
 `cellrs` is a terminal-based battery indicator written in [Rust](https://www.rust-lang.org/).
 
----
+## Overview
 
-## Platforms
+Any terminal emulator should work.
+
+### Platforms
 
 Supported platforms/versions are generally based on [battery](https://crates.io/crates/battery).
 
 - Linux 2.6.39+
+
+### Prerequisites
+
+- There no specific prerequisites to user `cellrs`.
+- For developers, [Rust](https://www.rust-lang.org/), including [`cargo`](https://github.com/rust-lang/cargo/).
+
+### Dependencies
+
+- [battery](https://crates.io/crate/rust-battery)
+- [chrono](https://crates.io/crate/chrono)
+- [termion](https://crates.io/crates/termion)
 
 ## Install & Run
 
@@ -37,12 +52,6 @@ There are a few ways you can get and use `cellrs`.
 
 - **GitLab Repo**: [gitlab.com/leglesslamb/cellrs](https://gitlab.com/leglesslamb/cellrs).
 - **Crate Listing**: [crates.io/crate/cellrs](https://crates.io/crates/cellrs).
-
-### Dependencies
-
-- [battery](https://crates.io/crate/rust-battery)
-- [chrono](https://crates.io/crate/chrono)
-- [termion](https://crates.io/crates/termion)
 
 ---
 
