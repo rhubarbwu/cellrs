@@ -4,15 +4,45 @@ extern crate termion;
 use battery::units::ratio::percent;
 use battery::Battery;
 use std::io::Write;
-use termion::{clear, color, cursor, raw::RawTerminal};
+use termion::{clear, color, cursor, raw::RawTerminal as Term};
 
 // Visual characters for battery.
 const CELL_CHAR: &str = "|";
 const CELL_WALL: &str = "=";
 
+/// Returns battery height/width based on dimensions of the terminal.
+/// - The sizes used in pattern matching are to some degree arbitrary.
+/// - Returns (0,0) when the terminal is too thin or short: < (10, 7).
+///   - This will disallow the next refresh, but allows recovery and refresh
+///     after next acceptable resize.
+fn battery_size() -> (u16, u16) {
+    let (term_width, term_height) = termion::terminal_size().unwrap();
+
+    /*  Round the width down to the next multiple of 5 and subtract the
+    minimum of the last pattern. */
+    let x = match term_width {
+        0..=9 => return (0, 0),
+        10..=24 => (term_width / 5) * 5 - 5,
+        25..=49 => (term_width / 5) * 5 - 10,
+        50..=99 => (term_width / 5) * 5 - 25,
+        _ => (term_width / 5) * 5 - 50,
+    };
+
+    // Truncate the height to an appropriate value, to include the stats.
+    let y = match term_height {
+        0..=6 => return (0, 0),
+        7..=10 => term_height - 4,
+        11..=25 => 7,
+        26..=50 => 8,
+        51..=100 => 9,
+        _ => 10,
+    };
+    (x, y)
+}
+
 /// CHeck if the terminal has been resized.
-pub fn check_resize<W: Write>(prev_size: (u16, u16), out: &mut RawTerminal<W>) -> bool {
-    if prev_size == termion::terminal_size().unwrap() {
+pub fn check_resize<W: Write>(size: (u16, u16), out: &mut Term<W>) -> bool {
+    if size == termion::terminal_size().unwrap() {
         return false;
     }
     write!(out, "{}", clear::All).unwrap();
@@ -22,24 +52,22 @@ pub fn check_resize<W: Write>(prev_size: (u16, u16), out: &mut RawTerminal<W>) -
 /// Default red-yellow-green colour theme for the battery cells.
 fn cell_colour(x: u8, x_size: u8) -> u8 {
     match x / (x_size / 5) {
-        0 => 9,
-        1 | 2 => 11,
-        3 | 4 => 10,
-        _ => 0,
+        0 => 9,      // Red.
+        1..=2 => 11, // Yellow.
+        3..=4 => 10, // Green.
+        _ => 0,      // Black. This shouldn't happen.
     }
-}
-
-/// Return the centre position of the terminal.
-fn terminal_centre() -> (u16, u16) {
-    let (x, y) = termion::terminal_size().unwrap();
-    (x / 2, y / 2)
 }
 
 /// Display a battery in the centre of the terminal.
 /// - The dimensions of the battery scale with the terminal.
 /// - The status and percentage are also shown.
-pub fn display_battery<W: Write>(b: &Battery, out: &mut RawTerminal<W>) {
-    let (b_width, b_height) = battery_size();
+/// - Early-return if the battery size (based on terminal size) is too small.
+pub fn display_battery<W: Write>(b: &Battery, out: &mut Term<W>) {
+    let (b_width, b_height) = match battery_size() {
+        (0, 0) => return,
+        (bw, bh) => (bw, bh),
+    };
     let perc = b.state_of_charge().get::<percent>().round() as u16;
     let pos = top_left();
 
@@ -75,36 +103,10 @@ pub fn display_battery<W: Write>(b: &Battery, out: &mut RawTerminal<W>) {
     out.flush().unwrap();
 }
 
-/// Returns battery height/width based on dimensions of the terminal.
-/// - The sizes used in pattern matching are to some degree arbitrary.
-///
-/// # Panics
-///
-/// Panics if the terminal dimensions are too small.
-/// - width < 5 || height < 7
-fn battery_size() -> (u16, u16) {
-    let (term_width, term_height) = termion::terminal_size().unwrap();
-
-    /*  Round the width down to the next multiple of 5 and subtract the
-    minimum of the last pattern. */
-    let x = match term_width {
-        0..=9 => panic!(),
-        10..=24 => (term_width / 5) * 5 - 5,
-        25..=49 => (term_width / 5) * 5 - 10,
-        50..=99 => (term_width / 5) * 5 - 25,
-        _ => (term_width / 5) * 5 - 50,
-    };
-
-    // Truncate the height to an appropriate value, to include the stats.
-    let y = match term_height {
-        0..=6 => panic!(),
-        7..=10 => term_height - 4,
-        11..=25 => 7,
-        26..=50 => 8,
-        51..=100 => 9,
-        _ => 10,
-    };
-    (x, y)
+/// Return the centre position of the terminal.
+fn terminal_centre() -> (u16, u16) {
+    let (x, y) = termion::terminal_size().unwrap();
+    (x / 2, y / 2)
 }
 
 /// Return position of the top-left corner of the battery.

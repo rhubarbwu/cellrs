@@ -6,13 +6,19 @@
 
 ## Overview
 
-Any terminal emulator should work.
+- `cellrs` displays a battery which resizes with the size of the terminal.
+- The battery contains "cells" that scale to the current battery level. These cells are colour-coded based on the percentage of the battery.
+- A status line is displayed below the battery showing numerical percentage and charging status.
 
 ### Platforms
 
 Supported platforms/versions are generally based on [battery](https://crates.io/crates/battery).
 
 - Linux 2.6.39+
+- MacOS 10.10+
+- Windows 7+
+- FreeBSD
+- DragonFlyBSD
 
 ### Prerequisites
 
@@ -30,13 +36,6 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 There are a few ways you can get and use `cellrs`.
 
 - Download a release binary from [GitLab](https://gitlab.com/leglesslamb/cellrs/-/releases).
-- Install from [crates.io](https://crates.io/crates/cellrs).
-
-  ```sh
-  cargo install cellrs
-  cellrs
-  ```
-
 - Build from [source](https://gitlab.com/leglesslamb/cellrs).
 
   ```sh
