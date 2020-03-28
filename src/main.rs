@@ -10,14 +10,15 @@ use std::thread;
 use std::time::Duration;
 use termion::{async_stdin, clear, cursor, raw::IntoRawMode};
 
+const REFRESH: Duration = Duration::from_millis(100);
+
 fn main() -> Result<(), battery::Error> {
     // The index of the selected battery.
     let index = 0;
 
     // Set up the time/clock format and refresh.
-    let format = "%H:%M".to_string();
+    let format = "%H:%M:%S".to_string();
     let clock: &str = format.as_str();
-    let refresh = Duration::from_millis(100);
 
     // Initialize the IO and size of the terminal.
     let mut size = termion::terminal_size().unwrap();
@@ -59,7 +60,7 @@ fn main() -> Result<(), battery::Error> {
                 size = termion::terminal_size().unwrap();
                 break;
             }
-            thread::sleep(refresh);
+            thread::sleep(REFRESH);
         }
 
         // If the refresh resulted from the user quitting, break out of loop.

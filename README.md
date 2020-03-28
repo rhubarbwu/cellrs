@@ -27,8 +27,8 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 
 ### Dependencies
 
-- [battery](https://crates.io/crate/rust-battery)
-- [chrono](https://crates.io/crate/chrono)
+- [battery](https://crates.io/crates/battery)
+- [chrono](https://crates.io/crates/chrono)
 - [termion](https://crates.io/crates/termion)
 
 ## Install & Run
