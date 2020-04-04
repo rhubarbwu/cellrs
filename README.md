@@ -22,7 +22,7 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 
 ### Prerequisites
 
-- There no specific prerequisites to user `cellrs`.
+- There are no specific prerequisites to use `cellrs`.
 - For developers, [Rust](https://www.rust-lang.org/), including [`cargo`](https://github.com/rust-lang/cargo/).
 
 ### Dependencies
@@ -47,10 +47,12 @@ There are a few ways you can get and use `cellrs`.
 
 ---
 
-## Development
+## Development/Pages
 
-- **GitLab Repo**: [gitlab.com/leglesslamb/cellrs](https://gitlab.com/leglesslamb/cellrs).
-- **Crate Listing**: [crates.io/crate/cellrs](https://crates.io/crates/cellrs).
+- **Crate Listing**: [crates.io](https://crates.io/crates/cellrs).
+- **Homepage**: [leglesslamb.gitlab.io](https://leglesslamb.gitlab.io/post/cellrs).
+- **GitHub Repo**: [github.com](https://github.com/leglesslamb/cellrs).
+- **GitLab Repo**: [gitlab.com](https://gitlab.com/leglesslamb/cellrs).
 
 ---
 

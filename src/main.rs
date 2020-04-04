@@ -20,12 +20,13 @@ fn main() -> Result<(), battery::Error> {
     let manager = Manager::new()?;
     let index = 0;
 
-    // Initialize the IO;
+    // Initialize the IO and clear the terminal.
     let mut stdin = async_stdin().bytes();
     let mut stdout = stdout().into_raw_mode().unwrap();
+    write!(stdout, "\n{}{}\n", cursor::Hide, clear::All).unwrap();
 
     // Initialize the battery registers.
-    let mut force = false;
+    let mut force = true;
     let mut level = 101 as u16;
     let mut state = State::Unknown;
 
@@ -44,7 +45,6 @@ fn main() -> Result<(), battery::Error> {
 
         // If the battery has changed level or state, display.
         if force {
-            write!(stdout, "\n{}{}\n", cursor::Hide, clear::All).unwrap();
             display::display_battery(&mut stdout, &battery);
             force = false;
         }
@@ -54,7 +54,7 @@ fn main() -> Result<(), battery::Error> {
         let mut exit = false;
         let time = Local::now().format(clock).to_string();
         let size = termion::terminal_size().unwrap();
-        while !force && Local::now().format(clock).to_string() == time {
+        while Local::now().format(clock).to_string() == time {
             // Match user use input to keypress functions.
             if let Some(Ok(b)) = stdin.next() {
                 match b {

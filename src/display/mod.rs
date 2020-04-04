@@ -4,9 +4,10 @@ extern crate termion;
 use battery::units::ratio::percent;
 use battery::Battery;
 use std::io::Write;
-use termion::{color, cursor, raw::RawTerminal};
+use termion::{color, cursor::Goto, raw::RawTerminal as RawTerm};
 
 // Visual characters for battery.
+const CELL_BLANK: &str = " ";
 const CELL_CHAR: &str = "|";
 const CELL_WALL: &str = "=";
 
@@ -68,7 +69,7 @@ fn cell_colour(x: u8, x_size: u8) -> u8 {
 /// - The dimensions of the battery scale with the terminal.
 /// - The status and percentage are also shown.
 /// - Early-return if the battery size (based on terminal size) is too small.
-pub fn display_battery<W: Write>(out: &mut RawTerminal<W>, batt: &Battery) {
+pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery) {
     let (batt_width, batt_height) = match battery_size() {
         (0, 0) => return,
         (bw, bh) => (bw, bh),
@@ -80,31 +81,29 @@ pub fn display_battery<W: Write>(out: &mut RawTerminal<W>, batt: &Battery) {
     for x in 0..batt_width {
         // Iterate through the height to print the walls and cells.
         for y in 0..batt_height {
-            let (fill, color) = match (y, batt_height - y) {
-                (0, _) | (_, 1) => (CELL_WALL, 15),
-                // Skip this cell if it's beyond the battery's percentage.
-                _ => match 100 * x > perc * batt_width {
-                    true => continue,
-                    _ => (CELL_CHAR, cell_colour(x as u8, batt_width as u8)),
-                },
+            let (fill, color) = if y == 0 || batt_height - y == 1 {
+                (CELL_WALL, 15)
+            } else if 100 * x > perc * batt_width {
+                (CELL_BLANK, 0)
+            } else {
+                (CELL_CHAR, cell_colour(x as u8, batt_width as u8))
             };
 
             // Write the cell or wall to the terminal.
             write!(
                 out,
                 "{}{}{}",
-                cursor::Goto(pos.0 + x, pos.1 + y),
+                Goto(pos.0 + x, pos.1 + y),
                 color::Fg(color::AnsiValue(color)),
                 fill,
             )
             .unwrap();
         }
     }
-
-    // Set the position for the status and percentage line.
-    let stat_pos = cursor::Goto(pos.0, pos.1 + batt_height + 1);
+    let stat_pos = Goto(pos.0, pos.1 + batt_height + 1);
     let white = color::Fg(color::White);
-    write!(out, "{}{}{}% - {}", stat_pos, white, perc, batt.state()).unwrap();
+    write!(out, "{}{}", stat_pos, " ".repeat(batt_width as usize)).unwrap();
+    write!(out, "{}{}{}% - {}", stat_pos, white, perc, batt.state(),).unwrap();
     out.flush().unwrap();
 }
 
