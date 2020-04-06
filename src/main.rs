@@ -54,7 +54,7 @@ fn main() -> Result<(), battery::Error> {
         let mut exit = false;
         let time = Local::now().format(clock).to_string();
         let size = termion::terminal_size().unwrap();
-        while Local::now().format(clock).to_string() == time {
+        while !force && Local::now().format(clock).to_string() == time {
             // Match user use input to keypress functions.
             if let Some(Ok(b)) = stdin.next() {
                 match b {

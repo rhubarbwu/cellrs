@@ -49,10 +49,14 @@ There are a few ways you can get and use `cellrs`.
 
 ## Development/Pages
 
-- **Crate Listing**: [crates.io](https://crates.io/crates/cellrs).
-- **Homepage**: [leglesslamb.gitlab.io](https://leglesslamb.gitlab.io/post/cellrs).
-- **GitHub Repo**: [github.com](https://github.com/leglesslamb/cellrs).
-- **GitLab Repo**: [gitlab.com](https://gitlab.com/leglesslamb/cellrs).
+- [**Homepage**](https://leglesslamb.gitlab.io/post/cellrs)
+- [**GitLab**](https://gitlab.com/leglesslamb/cellrs)
+  - Working issues and Merge Requests (MRs) are reviewed.
+  - Bug reports and feature requests are preferred.
+- [**GitHub (Mirror)**](https://github.com/leglesslamb/cellrs)
+  - Bug reports and feature requests are accepted.
+- [**crates.io**](https://crates.io/crates/cellrs)
+  - Not yet published.
 
 ---
 
