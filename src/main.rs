@@ -25,7 +25,10 @@ fn main() -> Result<(), battery::Error> {
     let mut stdout = stdout().into_raw_mode().unwrap();
     write!(stdout, "\n{}{}\n", cursor::Hide, clear::All).unwrap();
 
-    // Initialize the battery registers.
+    // Initialize the battery settings and registers.
+    let blink_max = 1;
+    let blink_on = true;
+    let mut blink = 0;
     let mut force = true;
     let mut level = 101 as u16;
     let mut state = State::Unknown;
@@ -34,7 +37,7 @@ fn main() -> Result<(), battery::Error> {
     let format = "%H:%M:%S".to_string();
     let clock: &str = format.as_str();
     loop {
-        // Get selectde battery.
+        // Get selected battery.
         let battery = match manager.batteries()?.nth(index) {
             None => break,
             Some(maybe_batt) => match maybe_batt {
@@ -45,8 +48,10 @@ fn main() -> Result<(), battery::Error> {
 
         // If the battery has changed level or state, display.
         if force {
-            display::display_battery(&mut stdout, &battery);
-            force = false;
+            blink = display::display_battery(&mut stdout, &battery, blink);
+            if blink > blink_max {
+                blink = 0;
+            }
         }
 
         // Wait until the next clock cycle, then refresh.
@@ -54,7 +59,7 @@ fn main() -> Result<(), battery::Error> {
         let mut exit = false;
         let time = Local::now().format(clock).to_string();
         let size = termion::terminal_size().unwrap();
-        while !force && Local::now().format(clock).to_string() == time {
+        while Local::now().format(clock).to_string() == time {
             // Match user use input to keypress functions.
             if let Some(Ok(b)) = stdin.next() {
                 match b {
@@ -68,7 +73,7 @@ fn main() -> Result<(), battery::Error> {
             thread::sleep(REFRESH);
 
             // Check if the terminal size or battery level/state changed.
-            // If not, loop and wait for th next clock tick to refresh.
+            // If not, loop and wait for the next clock tick to refresh.
             // If so, update the changed value force an refresh.
             force = true;
             if size != termion::terminal_size().unwrap() {
@@ -78,7 +83,7 @@ fn main() -> Result<(), battery::Error> {
             } else if state != battery.state() {
                 state = battery.state();
             } else {
-                force = false;
+                force = blink_on;
             }
         }
 
