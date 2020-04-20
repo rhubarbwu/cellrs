@@ -9,6 +9,7 @@
 - `cellrs` displays a battery which resizes with the size of the terminal.
 - The battery contains "cells" that scale to the current battery level. These cells are colour-coded based on the percentage of the battery.
 - A status line is displayed below the battery showing numerical percentage and charging status.
+- Optionally, some cells will blink when the battery is charging.
 
 ### Platforms
 
@@ -22,7 +23,7 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 
 ### Prerequisites
 
-- There are no specific prerequisites to use `cellrs`.
+- There are no specific prerequisites for using `cellrs`.
 - For developers, [Rust](https://www.rust-lang.org/), including [`cargo`](https://github.com/rust-lang/cargo/).
 
 ### Dependencies
@@ -31,12 +32,13 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 - [chrono](https://crates.io/crates/chrono)
 - [termion](https://crates.io/crates/termion)
 
-## Install & Run
+## Install/Build
 
 There are a few ways you can get and use `cellrs`.
 
-- Download a release binary from [GitLab](https://gitlab.com/leglesslamb/cellrs/-/releases).
-- Build from [source](https://gitlab.com/leglesslamb/cellrs).
+- Install from [crates.io](https://crates.io/) (not yet published).
+- Download a release binary from [GitLab](https://gitlab.com/leglesslamb/cellrs/-/releases) and put it somewhere in your `$PATH`.
+- Build from [source](https://gitlab.com/leglesslamb/cellrs) and move the binary somewhere in your `$PATH`.
 
   ```sh
   git clone https://gitlab.com/leglesslamb/cellrs.git
@@ -44,6 +46,22 @@ There are a few ways you can get and use `cellrs`.
   cargo build --release
   ./target/release/cellrs
   ```
+
+### Usage
+
+```help
+usage : ./cellrs
+        -b      Set custom blink-width [16-bit unsigned] (defaults to 1).
+        -h      Display this help message.
+```
+
+#### Keyboard Controls
+
+- `b` cycles through the blink-width value.
+  - If your custom blink-width is `0` or unset, it will cycle through `{0,1,<max-width>,...}`.
+  - If your custom blink-width is `1`, it will cycle through `{1,<max-width>,0,...}`.
+  - Otherwise, it will cycle through `{<custom-width>,<max-width>,0,1,...}`.
+- `q` quits `cellrs`.
 
 ---
 
