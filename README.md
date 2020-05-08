@@ -1,8 +1,13 @@
 # cellrs
 
+[![Latest Version](https://img.shields.io/crates/v/cellrs.svg)](https://crates.io/crates/cellrs)
+[![Latest Version](https://docs.rs/cellrs/badge.svg)](https://docs.rs/cellrs)
+![Minimum rustc version](https://img.shields.io/badge/rustc-1.36+-yellow.svg)
+![Apache 2.0 OR MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ![Classic Screenshot](screenshots/classic.jpg)
 
-`cellrs` is a terminal-based battery indicator written in [Rust](https://www.rust-lang.org/).
+`cellrs` (pronounced "cellars") is a terminal-based battery indicator written in [Rust](https://www.rust-lang.org/).
 
 ## Overview
 
@@ -36,23 +41,27 @@ Supported platforms/versions are generally based on [battery](https://crates.io/
 
 There are a few ways you can get and use `cellrs`.
 
-- Install from [crates.io](https://crates.io/) (not yet published).
+- Install from [crates.io](https://crates.io/).
+
+  ```sh
+  cargo install cellrs
+  ```
+
 - Download a release binary from [GitLab](https://gitlab.com/leglesslamb/cellrs/-/releases) and put it somewhere in your `$PATH`.
-- Build from [source](https://gitlab.com/leglesslamb/cellrs) and move the binary somewhere in your `$PATH`.
+- Build from [source](https://gitlab.com/leglesslamb/cellrs).
 
   ```sh
   git clone https://gitlab.com/leglesslamb/cellrs.git
   cd cellrs
-  cargo build --release
-  ./target/release/cellrs
+  make install
   ```
 
 ### Usage
 
 ```help
 usage : ./cellrs
-        -b      Set custom blink-width [16-bit unsigned] (defaults to 1).
-        -h      Display this help message.
+        -b [blink-width]  Set custom blink-width [16-bit unsigned] (defaults to 1).
+        -h                Display this help message.
 ```
 
 #### Keyboard Controls
@@ -73,8 +82,7 @@ usage : ./cellrs
   - Bug reports and feature requests are preferred.
 - [**GitHub (Mirror)**](https://github.com/leglesslamb/cellrs)
   - Bug reports and feature requests are accepted.
-- [**crates.io**](https://crates.io/crates/cellrs)
-  - Not yet published.
+- [**crates.io**](https://crates.io/crates/cellrs).
 
 ---
 

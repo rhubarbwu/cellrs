@@ -4,13 +4,11 @@ version = "0.2.0"
 authors = ["leglesslamb <wu.rupert@outlook.com>"]
 edition = "2018"
 description = "A terminal-based battery indicator written in Rust."
-licence = "MIT"
-licence-file = "LICENCE"
 repository = "https://gitlab.com/leglesslamb/cellrs"
 readme = "README.md"
-
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+categories = ["command-line-utilities"]
+keywords = ["battery", "terminal"]
+license = "MIT"
 
 [dependencies]
 battery = "0.7.5"
