@@ -2,7 +2,7 @@ extern crate battery;
 extern crate termion;
 
 use battery::units::ratio::percent;
-use battery::{Battery, State};
+use battery::Battery;
 use std::io::Write;
 use termion::{color, cursor::Goto, raw::RawTerminal as RawTerm};
 
@@ -71,14 +71,13 @@ fn cell_colour(x: u8, x_size: u8) -> u8 {
 /// - The status and percentage are also shown.
 /// - Blinking cells are shown, and the blink counter <blink> is updated.
 /// - Early-return if the battery size (based on terminal size) is too small.
-pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u16) -> u16 {
+pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u16) {
     let (batt_width, batt_height) = match battery_size() {
-        (0, 0) => return blink,
+        (0, 0) => return,
         (bw, bh) => (bw, bh),
     };
     let perc = battery_level(batt);
     let pos = battery_top_left();
-    let mut new_blink = blink + 1;
 
     // Iterate through width/height to print the battery walls/cells.
     for x in 0..batt_width {
@@ -89,10 +88,8 @@ pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u1
             } else if x >= blink && 100 * (x - blink) > perc * (batt_width) {
                 (CELL_BLANK, 0) // Black blank.
             } else if 100 * x > perc * batt_width {
-                if x + 1 == batt_width {
-                    new_blink = 0; // Reset blink counter.
-                }
-                (CELL_CHAR, 14) // Cyan blinking cell.
+                // Cyan blinking cell.
+                (CELL_CHAR, 14)
             } else {
                 // Regular coloured cell.
                 (CELL_CHAR, cell_colour(x as u8, batt_width as u8))
@@ -113,10 +110,6 @@ pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u1
 
     // Flush the output stream and return the new blink counter.
     out.flush().unwrap();
-    match batt.state() {
-        State::Charging => new_blink,
-        _ => 0,
-    }
 }
 
 /// Return the centre position of the terminal.

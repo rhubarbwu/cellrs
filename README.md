@@ -67,9 +67,8 @@ usage : ./cellrs
 #### Keyboard Controls
 
 - `b` cycles through the blink-width value.
-  - If your custom blink-width is `0` or unset, it will cycle through `{0,1,<max-width>,...}`.
-  - If your custom blink-width is `1`, it will cycle through `{1,<max-width>,0,...}`.
-  - Otherwise, it will cycle through `{<custom-width>,<max-width>,0,1,...}`.
+  - If your custom blink-width was `1` or unset, it will cycle through `{1, <max-width>, 0, ...}`.
+  - Otherwise, it will cycle through `{<custom-width>, <max-width>, 0, ...}`.
 - `q` quits `cellrs`.
 
 ---
