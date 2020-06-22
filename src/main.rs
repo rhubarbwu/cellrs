@@ -2,12 +2,12 @@ extern crate battery;
 extern crate chrono;
 extern crate termion;
 
-mod blink;
 mod display;
 mod help;
 
 use battery::Manager;
 use chrono::prelude::*;
+use display::blink;
 use std::io::{stdout, Read, Write};
 use std::time::Duration;
 use std::{env, thread};
@@ -20,11 +20,8 @@ const REFRESH: Duration = Duration::from_millis(100);
 
 /// Main function for cellrs, including argument processing and display loop.
 fn main() -> Result<(), battery::Error> {
-    // Initialize the battery settings and registers.
-    let mut blink_custom = 1;
-    let mut blink_max = 1;
-    let mut blink = 0;
-
+    // Initialize the battery blink level, max, custom max, reset flag.
+    let mut blink_inst = blink::BlinkMoment::new();
     // Process command-line arguments and exit to help if specified.
     let args: Vec<String> = env::args().collect();
     let name = String::from(&args[0].to_string());
@@ -33,20 +30,14 @@ fn main() -> Result<(), battery::Error> {
             "-b" => {
                 // If the -b blink flag is used but no value is specified.
                 if args.len() <= i + 1 {
-                    blink_max = 1; // Default blink-value to 1.
                     continue;
                 }
 
                 // Atempt parsing blink-value to u16.
                 let ch = String::from(&args.get(i + 1).unwrap().to_string());
                 match ch.parse::<u8>() {
-                    Ok(m) => {
-                        blink_custom = m as u16;
-                        blink_max = blink_custom;
-                    }
-                    _ => {
-                        blink_max = 1;
-                    }
+                    Ok(m) => blink_inst.set_max(m as u16),
+                    _ => {}
                 }
             }
             "-h" => {
@@ -79,7 +70,7 @@ fn main() -> Result<(), battery::Error> {
         };
 
         // If the battery has changed level or state, display.
-        display::display_battery(&mut stdout, &battery, blink);
+        display::display_battery(&mut stdout, &battery, &mut blink_inst);
 
         // Wait until the next clock cycle, then refresh.
         // Refresh early if terminal size or battery level/state change.
@@ -95,7 +86,7 @@ fn main() -> Result<(), battery::Error> {
                         break;
                     }
                     ASCII_B => {
-                        blink_max = blink::cycle(blink_max, blink_custom, size.0);
+                        blink_inst.cycle(size.0);
                     }
                     _ => (),
                 }
@@ -113,7 +104,7 @@ fn main() -> Result<(), battery::Error> {
             break;
         }
 
-        blink = blink::increment(&battery, blink, blink_max);
+        blink_inst.increment(&battery);
     }
 
     // Reset prompt position before exiting.

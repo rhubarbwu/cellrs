@@ -1,6 +1,6 @@
 [package]
 name = "cellrs"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["leglesslamb <wu.rupert@outlook.com>"]
 edition = "2018"
 description = "A terminal-based battery indicator written in Rust."

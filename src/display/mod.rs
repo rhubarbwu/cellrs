@@ -1,8 +1,11 @@
 extern crate battery;
 extern crate termion;
 
+pub mod blink;
+
 use battery::units::ratio::percent;
 use battery::Battery;
+use blink::BlinkMoment;
 use std::io::Write;
 use termion::{color, cursor::Goto, raw::RawTerminal as RawTerm};
 
@@ -71,7 +74,11 @@ fn cell_colour(x: u8, x_size: u8) -> u8 {
 /// - The status and percentage are also shown.
 /// - Blinking cells are shown, and the blink counter <blink> is updated.
 /// - Early-return if the battery size (based on terminal size) is too small.
-pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u16) {
+pub fn display_battery<W: Write>(
+    out: &mut RawTerm<W>,
+    batt: &Battery,
+    blink_moment: &mut BlinkMoment,
+) {
     let (batt_width, batt_height) = match battery_size() {
         (0, 0) => return,
         (bw, bh) => (bw, bh),
@@ -82,12 +89,16 @@ pub fn display_battery<W: Write>(out: &mut RawTerm<W>, batt: &Battery, blink: u1
     // Iterate through width/height to print the battery walls/cells.
     for x in 0..batt_width {
         for y in 0..batt_height {
+            let blink = blink_moment.get_value();
             // Get the fill character and colour based on position and blink.
             let (fill, color) = if y == 0 || batt_height - y == 1 {
                 (CELL_WALL, 15) // White cell wall.
             } else if x >= blink && 100 * (x - blink) > perc * (batt_width) {
                 (CELL_BLANK, 0) // Black blank.
             } else if 100 * x > perc * batt_width {
+                if x + 1 >= batt_width {
+                    blink_moment.set_reset();
+                }
                 // Cyan blinking cell.
                 (CELL_CHAR, 14)
             } else {
