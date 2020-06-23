@@ -1,10 +1,10 @@
 [package]
 name = "cellrs"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["leglesslamb <wu.rupert@outlook.com>"]
 edition = "2018"
 description = "A terminal-based battery indicator written in Rust."
-repository = "https://gitlab.com/leglesslamb/cellrs"
+repository = "https://github.com/leglesslamb/cellrs"
 readme = "README.md"
 categories = ["command-line-utilities"]
 keywords = ["battery", "terminal"]

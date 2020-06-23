@@ -17,10 +17,11 @@ use widget::blink;
 
 const REFRESH: Duration = Duration::from_millis(100);
 
-/// Main function for cellrs, including argument processing and display loop.
-fn main() -> Result<(), battery::Error> {
+fn preprocess() -> (widget::blink::BlinkMoment, usize) {
     // Initialize the battery blink level, max, custom max, reset flag.
     let mut blink_inst = blink::BlinkMoment::new();
+    let mut index = 0;
+
     // Process command-line arguments and exit to help if specified.
     let args: Vec<String> = env::args().collect();
     let name = String::from(&args[0].to_string());
@@ -39,21 +40,30 @@ fn main() -> Result<(), battery::Error> {
                     _ => {}
                 }
             }
-            "-h" => {
-                help::print(&name);
-            }
+            "-h" => help::print(&name),
+            "-1" => index = 0,
+            "-2" => index = 1,
+            "-3" => index = 2,
+            "-4" => index = 3,
             _ => {}
         }
     }
 
-    // Battery manager and index of selected battery (default 0).
-    let manager = Manager::new()?;
-    let mut index = 0;
+    (blink_inst, index)
+}
+
+/// Main function for cellrs, including argument processing and display loop.
+fn main() -> Result<(), battery::Error> {
+    // Initialize the battery blink level, max, custom max, reset flag.
+    let (mut blink_inst, mut index) = preprocess();
 
     // Initialize the IO and clear the terminal.
     let mut stdin = async_stdin().bytes();
     let mut stdout = stdout().into_raw_mode().unwrap();
     write!(stdout, "\n{}{}\n", cursor::Hide, clear::All).unwrap();
+
+    // Battery manager and index of selected battery (default 0).
+    let manager = Manager::new()?;
 
     // Set up the time/clock format and refresh.
     let format = "%H:%M:%S".to_string();
