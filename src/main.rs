@@ -3,17 +3,17 @@ extern crate chrono;
 extern crate termion;
 
 mod ascii_keys;
-mod display;
 mod help;
+mod widget;
 
 use ascii_keys as keys;
 use battery::Manager;
 use chrono::prelude::*;
-use display::blink;
 use std::io::{stdout, Read, Write};
 use std::time::Duration;
 use std::{env, thread};
 use termion::{async_stdin, clear, cursor, raw::IntoRawMode};
+use widget::blink;
 
 const REFRESH: Duration = Duration::from_millis(100);
 
@@ -71,7 +71,7 @@ fn main() -> Result<(), battery::Error> {
         };
 
         // If the battery has changed level or state, display.
-        display::display_battery(&mut stdout, &battery, &mut blink_inst);
+        widget::display_battery(&mut stdout, &battery, &mut blink_inst);
 
         // Wait until the next clock cycle, then refresh.
         // Refresh early if terminal size or battery level/state change.
