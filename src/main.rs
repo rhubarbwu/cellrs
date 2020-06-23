@@ -48,7 +48,7 @@ fn main() -> Result<(), battery::Error> {
 
     // Battery manager and index of selected battery (default 0).
     let manager = Manager::new()?;
-    let index = 0;
+    let mut index = 0;
 
     // Initialize the IO and clear the terminal.
     let mut stdin = async_stdin().bytes();
@@ -60,12 +60,14 @@ fn main() -> Result<(), battery::Error> {
     let clock: &str = format.as_str();
     loop {
         // Get selected battery.
-        let battery = match manager.batteries()?.nth(index) {
-            None => break,
-            Some(maybe_batt) => match maybe_batt {
-                Err(_) => break,
-                Ok(batt) => batt,
-            },
+        let battery = match (index, manager.batteries()?.nth(index)) {
+            (0, None) => break,          // 0th battery doesn't work. Break.
+            (_, Some(Ok(batt))) => batt, // Working battery stats.
+            _ => {
+                // Indexed battery doesn't exist; index to 0 and try again.
+                index = 0;
+                continue;
+            }
         };
 
         // If the battery has changed level or state, display.
@@ -84,9 +86,11 @@ fn main() -> Result<(), battery::Error> {
                         exit = true;
                         break;
                     }
-                    keys::B => {
-                        blink_inst.cycle(size.0);
-                    }
+                    keys::B => blink_inst.cycle(size.0),
+                    keys::NUM_1 => index = 0,
+                    keys::NUM_2 => index = 1,
+                    keys::NUM_3 => index = 2,
+                    keys::NUM_4 => index = 3,
                     _ => (),
                 }
             }

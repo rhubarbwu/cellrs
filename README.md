@@ -15,6 +15,7 @@
 - The battery contains "cells" that scale to the current battery level. These cells are colour-coded based on the percentage of the battery.
 - A status line is displayed below the battery showing numerical percentage and charging status.
 - Optionally, some cells will blink when the battery is charging.
+- The first four indexed batteries can be selected.
 
 ### Platforms
 
@@ -70,6 +71,7 @@ usage : ./cellrs
   - If your custom blink-width was `1` or unset, it will cycle through `{1, <max-width>, 0, ...}`.
   - Otherwise, it will cycle through `{<custom-width>, <max-width>, 0, ...}`.
 - `q` quits `cellrs`.
+- `1-4` can switch between up to the first four indexed batteries. Index-out-of-bounds will default index to `0`.
 
 ---
 
