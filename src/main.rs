@@ -2,9 +2,11 @@ extern crate battery;
 extern crate chrono;
 extern crate termion;
 
+mod ascii_keys;
 mod display;
 mod help;
 
+use ascii_keys as keys;
 use battery::Manager;
 use chrono::prelude::*;
 use display::blink;
@@ -13,9 +15,6 @@ use std::time::Duration;
 use std::{env, thread};
 use termion::{async_stdin, clear, cursor, raw::IntoRawMode};
 
-const ASCII_ESC: u8 = 27;
-const ASCII_B: u8 = 98;
-const ASCII_Q: u8 = 113;
 const REFRESH: Duration = Duration::from_millis(100);
 
 /// Main function for cellrs, including argument processing and display loop.
@@ -81,11 +80,11 @@ fn main() -> Result<(), battery::Error> {
             // Match user use input to keypress functions.
             if let Some(Ok(b)) = stdin.next() {
                 match b {
-                    ASCII_ESC | ASCII_Q => {
+                    keys::ESC | keys::Q => {
                         exit = true;
                         break;
                     }
-                    ASCII_B => {
+                    keys::B => {
                         blink_inst.cycle(size.0);
                     }
                     _ => (),
