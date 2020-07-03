@@ -3,17 +3,17 @@ extern crate battery;
 use battery::{Battery, State};
 use std::i16;
 
-pub struct BlinkMoment {
+pub struct BlinkState {
     val: u16,
     max: u16,
     custom: u16,
     reset: bool,
 }
 
-impl BlinkMoment {
+impl BlinkState {
     /// Internal constructor with default values.
-    pub fn new() -> BlinkMoment {
-        BlinkMoment {
+    pub fn new() -> BlinkState {
+        BlinkState {
             val: 0,
             max: 1,
             custom: 1,

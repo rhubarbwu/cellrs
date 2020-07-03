@@ -6,24 +6,23 @@ mod ascii_keys;
 mod help;
 mod widget;
 
-use ascii_keys as keys;
+use ascii_keys::*;
 use battery::Manager;
-use chrono::prelude::*;
+use chrono::prelude::Local;
 use std::io::{stdout, Read, Write};
-use std::time::Duration;
-use std::{env, thread};
+use std::{env::args, thread::sleep, time::Duration};
 use termion::{async_stdin, clear, cursor, raw::IntoRawMode};
-use widget::blink;
+use widget::blink::BlinkState;
 
 const REFRESH: Duration = Duration::from_millis(100);
 
-fn preprocess() -> (widget::blink::BlinkMoment, usize) {
+fn preprocess() -> (BlinkState, usize) {
     // Initialize the battery blink level, max, custom max, reset flag.
-    let mut blink_inst = blink::BlinkMoment::new();
+    let mut blink_inst = BlinkState::new();
     let mut index = 0;
 
     // Process command-line arguments and exit to help if specified.
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = args().collect();
     let name = String::from(&args[0].to_string());
     for i in 1..args.len() {
         match args[i].as_str() {
@@ -33,7 +32,7 @@ fn preprocess() -> (widget::blink::BlinkMoment, usize) {
                     continue;
                 }
 
-                // Atempt parsing blink-value to u16.
+                // Attempt parsing blink-value to u16.
                 let ch = String::from(&args.get(i + 1).unwrap().to_string());
                 match ch.parse::<u8>() {
                     Ok(m) => blink_inst.set_max(m as u16),
@@ -89,22 +88,19 @@ fn main() -> Result<(), battery::Error> {
         let time = Local::now().format(clock).to_string();
         let size = termion::terminal_size().unwrap();
         while Local::now().format(clock).to_string() == time {
-            // Match user use input to keypress functions.
+            // Match user input to keypress functions.
             if let Some(Ok(b)) = stdin.next() {
                 match b {
-                    keys::ESC | keys::Q => {
+                    KEY_ESC | KEY_Q => {
                         exit = true;
                         break;
                     }
-                    keys::B => blink_inst.cycle(size.0),
-                    keys::NUM_1 => index = 0,
-                    keys::NUM_2 => index = 1,
-                    keys::NUM_3 => index = 2,
-                    keys::NUM_4 => index = 3,
+                    KEY_B => blink_inst.cycle(size.0),
+                    NUM_1..=NUM_4 => index = (b - NUM_1) as usize,
                     _ => (),
                 }
             }
-            thread::sleep(REFRESH);
+            sleep(REFRESH);
 
             // Clear the screen if the terminal size changed.
             if size != termion::terminal_size().unwrap() {
